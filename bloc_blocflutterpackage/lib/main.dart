@@ -1,6 +1,6 @@
-import 'package:bloc_blocflutterpackage/color_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bloc_blocflutterpackage/color_bloc.dart';
 
 void main() => runApp(MyApp());
 
@@ -8,8 +8,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: BlocProvider<ColorBloc>(
-          builder: (context) => ColorBloc(), child: MainPage()),
+      home: BlocProvider(
+        create: (_) => ColorBloc(),
+        child: MainPage(),
+      ),
     );
   }
 }
@@ -17,15 +19,29 @@ class MyApp extends StatelessWidget {
 class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    ColorBloc bloc = BlocProvider.of<ColorBloc>(context);
     return Scaffold(
+      appBar: AppBar(
+        title: Text('BLoC dengan flutter_bloc'),
+      ),
+      body: Center(
+        child: BlocBuilder<ColorBloc, Color>(
+          builder: (context, currentState) => AnimatedContainer(
+            duration: Duration(
+              milliseconds: 500,
+            ),
+            width: 100,
+            height: 100,
+            color: currentState,
+          ),
+        ),
+      ),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
+        children: [
           FloatingActionButton(
             backgroundColor: Colors.amber,
             onPressed: () {
-              bloc.dispatch(ColorEvent.to_amber);
+              context.read<ColorBloc>().add(ColorEvent.to_amber);
             },
           ),
           SizedBox(
@@ -34,23 +50,10 @@ class MainPage extends StatelessWidget {
           FloatingActionButton(
             backgroundColor: Colors.lightBlue,
             onPressed: () {
-              bloc.dispatch(ColorEvent.to_light_blue);
+              context.read<ColorBloc>().add(ColorEvent.to_lightBlue);
             },
-          )
-        ],
-      ),
-      appBar: AppBar(
-        title: Text("BLoC dengan flutter_bloc"),
-      ),
-      body: Center(
-        child: BlocBuilder<ColorBloc, Color>(
-          builder: (context, currentColor) => AnimatedContainer(
-            width: 100,
-            height: 100,
-            color: currentColor,
-            duration: Duration(milliseconds: 500),
           ),
-        ),
+        ],
       ),
     );
   }
